@@ -1,0 +1,522 @@
+  <div id="cart-sidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <h2>Cart</h2>
+      <button id="close-cart">X</button>
+    </div>
+    <div class="cart-items">
+      <!-- Cart items will be added here dynamically -->
+    </div>
+    <div class="cart-footer">
+      <p id="cart-total">Total: $0.00</p>
+      <button id="checkout">Checkout</button>
+    </div>
+  </div>
+  <div id="cart-overlay" class="cart-overlay"></div>
+
+product.js
+
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded and parsed - product');
+  
+    const cartSidebar = document.getElementById('cart-sidebar');
+    const overlay = document.getElementById('overlay');
+    const cartTotal = document.getElementById('cart-total');
+    let cart = [];
+  
+    function openCart() {
+      console.log('Opening cart');
+      cartSidebar.style.transform = 'translateX(0)';
+      overlay.style.display = 'block';
+    }
+  
+    function closeCart() {
+      console.log('Closing cart');
+      cartSidebar.style.transform = 'translateX(100%)';
+      overlay.style.display = 'none';
+    }
+  
+    function updateCart() {
+      console.log('Updating cart');
+      const cartItemsContainer = document.querySelector('.cart-items');
+      cartItemsContainer.innerHTML = '';
+      let total = 0;
+  
+      cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `
+          <h4>${item.name}</h4>
+          <p>${item.price} x ${item.quantity}</p>
+        `;
+        cartItemsContainer.appendChild(cartItem);
+        total += item.price * item.quantity;
+      });
+  
+      cartTotal.innerText = `Total: $${total.toFixed(2)}`;
+    }
+  
+    document.getElementById('add-to-cart').addEventListener('click', () => {
+      console.log('Add to Cart button clicked');
+      const productName = document.getElementById('product-name').innerText;
+      const productPrice = parseFloat(document.getElementById('product-price').innerText.replace('$', ''));
+      const quantity = parseInt(document.getElementById('quantity').value);
+  
+      const existingProduct = cart.find(item => item.name === productName);
+      if (existingProduct) {
+        existingProduct.quantity += quantity;
+      } else {
+        cart.push({ name: productName, price: productPrice, quantity: quantity });
+      }
+  
+      updateCart();
+      openCart();
+    });
+  
+    document.querySelector('.cart-btn').addEventListener('click', () => {
+      console.log('Cart button clicked');
+      openCart();
+    });
+  
+    document.getElementById('close-cart').addEventListener('click', closeCart);
+    overlay.addEventListener('click', closeCart);
+  }); 
+
+script.js
+
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM fully loaded and parsed - shop');
+
+  const cartSidebar = document.getElementById('cart-sidebar');
+  const overlay = document.getElementById('cart-overlay');
+  const cartTotal = document.getElementById('cart-total');
+  let cart = [];
+
+  function openCart() {
+    console.log('Opening cart');
+    cartSidebar.style.transform = 'translateX(0)';
+    overlay.style.display = 'block';
+  }
+
+  function closeCart() {
+    console.log('Closing cart');
+    cartSidebar.style.transform = 'translateX(100%)';
+    overlay.style.display = 'none';
+  }
+
+  function updateCart() {
+    console.log('Updating cart');
+    const cartItemsContainer = document.querySelector('.cart-items');
+    cartItemsContainer.innerHTML = '';
+    let total = 0;
+
+    cart.forEach(item => {
+      const cartItem = document.createElement('div');
+      cartItem.classList.add('cart-item');
+      cartItem.innerHTML = `
+        <h4>${item.name}</h4>
+        <p>${item.price} x ${item.quantity}</p>
+      `;
+      cartItemsContainer.appendChild(cartItem);
+      total += item.price * item.quantity;
+    });
+
+    cartTotal.innerText = `Total: $${total.toFixed(2)}`;
+  }
+
+  document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', (e) => {
+      console.log('Add to Cart button clicked');
+      const productCard = e.target.closest('.product-card');
+      const productName = productCard.querySelector('.product-name').innerText;
+      const productPrice = parseFloat(productCard.querySelector('.product-price').innerText.replace('$', ''));
+
+      const existingProduct = cart.find(item => item.name === productName);
+      if (existingProduct) {
+        existingProduct.quantity += 1;
+      } else {
+        cart.push({ name: productName, price: productPrice, quantity: 1 });
+      }
+
+      updateCart();
+      openCart();
+    });
+  });
+
+  document.querySelector('.cart-btn').addEventListener('click', () => {
+    console.log('Cart button clicked');
+    openCart();
+  });
+
+  document.getElementById('close-cart').addEventListener('click', closeCart);
+  overlay.addEventListener('click', closeCart);
+});
+
+
+.cart-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 300px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f8f8;
+}
+
+.cart-items {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.cart-footer {
+  padding: 10px;
+  background-color: #f8f8f8;
+  text-align: center;
+}
+
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+} 
+
+
+
+
+
+
+#cart-icon{
+  font-size:1.8rem;
+  cursor:pointer;
+}
+.cart-page {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 360px;
+  min-height: 100vh;
+  padding: 20px;
+  background: white;
+  box-shadow: -2px 0 4px hsl(0 4% 15%/10%);
+  transition: 0.3s;
+}
+
+.cart-page.active {
+  right: 0;
+}
+
+.cartpage-title {
+  color:black;
+  text-align:center;
+  font-size:var(--fontSize-body-1);
+  font-weight:600px;
+}
+
+.cart-box{
+  color:black;
+  display:grid;
+  grid-template-columns:32% 50% 18%;
+  align-items:center;
+  gap:1rem;
+  margin-top:1rem;
+}
+
+.cart-img{
+  width:100px;
+  height:100px;
+  object-fit:contain;
+  padding:10px;
+}
+
+.detail-box{
+  color:black;
+  display:grid;
+  row-gap:0.5rem;
+}
+
+.cart-product-title{
+  color:black;
+  font-size:1.5rem;
+  text-transform:uppercase;
+}
+
+.cart-price{
+  color:black;
+  font-weight:500;
+}
+
+
+
+.cart-quantity{
+  color:black;
+  border:1px solid var(--eerie-black-3);
+  outline-color:var(--eerie-black-2);
+  width:2.4rem;
+  text-align:center;
+  font-size:1rem;
+}
+
+.cart-remove{
+  font-size:24px;
+  color:var(--bloody-red);
+  cursor:pointer;
+}
+
+.total{
+  color:black;
+  display:flex;
+  justify-content:flex-end;
+  margin-top:1.5rem;
+  border-top:1px solid var(--eerie-black-1);
+}
+
+.total-title{
+  font-size:1.5rem;
+  font-weight:600;
+}
+
+.total-price{
+  margin-left:1rem;
+}
+
+.btn-buy{
+  display:flex;
+  margin:1.5rem auto 0 auto;
+  padding:12px 20px;
+  border:none;
+  background-color: var(--quick-silver);
+  color:var(--eerie-black-2);
+  font-size:1.5rem;
+  font-weight:500;
+  cursor:pointer;
+}
+
+.btn-buy:hover{
+  background-color: var(--bloody-red);
+}
+
+#close-cart{
+  position:absolute;
+  top:1rem;
+  right:0.8rem;
+  font-size:2rem;
+  color:var(--eerie-black-3);
+  cursor:pointer;
+}
+
+<ion-icon name="trash-outline"></ion-icon>
+
+
+
+    <section class="shop-section">
+      <h2 class="shop-title">Shoes</h2>
+      <div class="products-grid">
+        <div class="product-card">
+          <a href="products.html?id=clothing1">
+           <img src="images/clothing-1.jpg" alt="Filler 1" class="product-image" data-hover="images/filer1-2.jpg">
+          </a>
+           <button class="add-to-cart">
+            <ion-icon name="cart-outline"></ion-icon>
+          </button>
+          <h6 class="product-name">Fairy Boots</h6>
+          <p class="product-price">$70.00</p>
+        </div>
+      </div>
+    </section>
+
+
+
+
+  <button class="cart-btn">
+                <div style="display: flex; gap: 10px; align-items: center;">
+
+                  <ion-icon name="bag" aria-hidden="true"></ion-icon>
+                    <span class="span">Cart</span>
+                </div>
+              </button>
+
+
+
+  <main >
+    <section class="contact-us-section">
+      <div class="container">
+        <div class="contact-us-content">
+          <div class="contact-us-text">
+            <h2 class="section-title">Contact Us</h2>
+            <p>Please check out our FAQs listed below to find answers to the questions you might have before sending us an email.</p>
+            <p>You're always welcome to contact us if you have any inquiries or questions regarding our products or your orders, customizing, and collaborating, or have any comments or feedback to share. We'd like to hear from you!</p>
+            <p>Email: <a href="mailto:lovingpetals@atelier.com">lovingpetals@atelier.com</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faqs-section">
+        <div class="container">
+          <h2 class="section-title">FAQs (Frequently Asked Questions)</h2>
+          <div class="faq-item">
+            <h3 class="question">What wire and gauge do you use?</h3>
+            <div class="answer">
+              <p>I use a mixture of 20g, 18g, 17g, 15g, and 12g depending on the type of product.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <h3 class="question">Do you ship internationally? and how much does it cost?</h3>
+            <div class="answer">
+              <p>Yes, this website offers worldwide shipping. Our shipping rates may vary and are calculated by the shipping carrier, depending on the total weight of all items in your cart and the location of your shipping address. Please visit our <a href="shipping-policy.html">Shipping Policy</a> page for more information.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <h3 class="question">When will I get my order?</h3>
+            <div class="answer">
+              <p>The current processing time & shipping methods are specified on our Shipping Policy page</p>
+            </div>
+          </div>
+        </div>
+      </section>
+  </main>
+
+
+
+
+
+.add-to-cart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart ion-icon {
+  font-size: 20px;
+}
+
+
+.add-to-cart:hover {
+  background-color:hsl(0, 10%, 54%);
+}
+
+
+
+
+
+      <main>
+        <div class="container">
+            <section class="about-maker">
+                <div class="maker-content">
+                    <img src="images/hero-slider3.jpeg" class="maker-image" alt="Antonia, the artist behind Loving Petals">
+                    <h2>MEET THE MAKER!</h2>
+                    <p>
+                        Hello! My name is Antonia, and I am the artist behind Loving Petals. Although I am not the only one and definitely not the first one to make wire art, my hands found a new pleasure of joy. With my designer mind and interest in minimalistic line drawings, I began exploring many ways to bring line art aesthetics into 3d forms. Through countless self-teaching, practices, failures, and explorations, I developed skills that focus on creating natural curves in lines and shapes that only hands can do and detailed structures while keeping them minimal. Now my journey through this hobby has grown into a full-time business, my only intention is to spread the same pleasure & joy I feel about this journey to others. For that reason, I enjoy creating what I would love to give myself, family or friends and creating designs that will also inspire others.
+                    </p>
+                </div>
+            </section>
+            <section class="about-business">
+                <img src="images/separator-image.jpeg" class="separator-image" alt="Loving Petals wire flowers">
+                <h2>ABOUT LOVING PETALS</h2>
+                <p>
+                    Loving Petals was founded in 2024 as a way to present a collection of 3D delicate wire flowers that were originally designed by Antonia. Each piece we make is handmade from scratch and meticulously crafted with care, one at a time, and made to order. Therefore, everything you receive from us is one-of-a-kind art.
+                    <br><br>
+                    We are inspired by the elegance that each line, curve, and shape of nature brings into our eyes harmoniously. Our goal is to give you enjoyable wire creations, capturing the essence of realistically complex nature forms and minimizing them into 2D & 3D line art. With that in mind, we will continue to thrive on our creative missions - to craft as many products as we can by hand, to be slow and conscientious in our process, to constantly develop new designs, and to improve our quality & style at all times.
+                </p>
+            </section>
+            <section class="shopping-benefits">
+                <h2>BY SHOPPING WITH US, YOU ARE ALSO...</h2>
+                <ul>
+                    <li>supporting a local artist</li>
+                    <li>discovering someone's biggest passion</li>
+                    <li>helping to keep creative craftsmanship alive</li>
+                    <li>guaranteed with the uniqueness of designs</li>
+                    <li>given something that lasts forever not for just now</li>
+                    <li>choosing more sustainable production rather than mass production</li>
+                    <li>showing appreciation for the artist's time spent on researching, designing, practices, failures, and overall creative process</li>
+                    <li>respecting labor and effort the artist puts into running the business, maintaining the workspace, managing orders and packaging, and communicating with customers</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+
+
+
+
+        <div class="text-center">
+          <p class="headline-1 navbar-title">Check our Socials</p>
+
+          <p class="body-4 navbar-text">lovingpetals.1</p>
+
+          <a href="mailto:lovingpetals@atelier.com" class="body-4 sidebar-link">lovingpetals@atelier.com</a>
+
+          <div class="separator"></div>
+
+          <p class="contact-label">Contact Us</p>
+
+          <a href="tel:+40758346800" class="body-1 contact-number hover-underline">
+            +40758346800
+          </a>
+        </div>
+
+
+
+
+
+<main>
+    <section class="shipping-policy-section">
+      <h2 class="shipping-policy-title">Shipping Policy</h2>
+      <h3 class="shipping-policy-subtitle">Our current processing time: 5 ~ 7 business days (excluding shipping)</h3>
+      <div class="shipping-policy-content">
+        <p>We ship worldwide! Our shipping rates may vary and are calculated by the shipping carrier, depending on the total weight of all items in your cart (including our most used package weight, 7.7 oz), and the location of your shipping address.</p>
+        <p><strong>** The weight of our products ranges between 0.15 ~ 0.5 oz.</strong></p>
+        <p>All delivery dates and times shown at the checkout are estimates provided by the shipping carrier and are not guaranteed as our processing time is NOT applied to them.</p>
+        <p>Orders are processed and shipped Monday through Friday within the specified current processing time (above) of the order date.</p>
+        <p>Please understand that once the packages are picked up from our location, we cannot control them. If you have a delivery question, you may contact the carrier directly using the tracking details provided to you - USPS / DHL.</p>
+        <p>US Domestic Shipping is via USPS First-Class Package, Priority Mail, and Priority Mail Express:</p>
+        <ul>
+          <li>First-Class: Packages up to 15.99 oz / 3 ~ 5 business days / $6 ~ $8</li>
+          <li>Priority Mail: Packages over 16 oz (1 lb) / 1 ~ 3 business days / $10 and up</li>
+        </ul>
+        <p>International Shipping is via DHL & USPS First-Class Package International and Priority Mail International:</p>
+        <ul>
+          <li>First-Class: Packages up to 15.99 oz / 1 ~ 4+ weeks / $26 ~ $38</li>
+          <li>Priority: Packages over 16 oz (1 lb) / 6 ~ 10 business days / $42 ~ $60 and up</li>
+        </ul>
+        <p><strong>** given prices are approximate prices</strong></p>
+        <p>Package sizes we use:</p>
+        <p>A medium box (7.7 oz), which is used in most cases of orders, is used to calculate shipping rates at checkout.</p>
+      </div>
+      <div class="shipping-package-image">
+        <img src="images/shipping.jpg" alt="Example of shipping packages"> 
+      </div>
+    </section>
+  </main>
